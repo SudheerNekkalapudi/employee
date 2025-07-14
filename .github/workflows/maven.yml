@@ -42,10 +42,8 @@ jobs:
       - name: Pull latest Docker image
         run: docker pull sudheern87/employee-image
 
-      - name: Stop & remove old container (if running)
-        run: |
-          docker ps -q --filter "name=springboot-example-container" | grep -q . && \
-          docker rm -f springboot-example-container || echo "No container to stop"
+      - name: Delete old container
+        run: docker rm -f nice_banzai
 
-      - name: Run new container
-        run: docker run -d -p 8080:8080 --name springboot-example-container sudheern87/employee-image
+      - name: Run Docker container
+        run: docker run -d -p 8080:8080 --name nice_banzai sudheern87/employee-image
