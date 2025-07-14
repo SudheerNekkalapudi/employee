@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Pull latest Docker image
-        run: docker pull sudheern87/employee-image:latest
+        run: docker pull sudheern87/employee-image
 
       - name: Stop & remove old container (if running)
         run: |
@@ -48,4 +48,4 @@ jobs:
           docker rm -f springboot-example-container || echo "No container to stop"
 
       - name: Run new container
-        run: docker run -d -p 8080:8080 --name springboot-example-container sudheern87/employee-image:latest
+        run: docker run -d -p 8080:8080 --name springboot-example-container sudheern87/employee-image
