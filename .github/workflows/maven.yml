@@ -25,7 +25,7 @@ jobs:
         run: mvn clean install -DskipTests
 
       - name: Build & push Docker image
-        uses: docker/docker-build-push@v6
+        uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: sudheern87/employee-image
           tags: latest
@@ -43,7 +43,7 @@ jobs:
         run: docker pull sudheern87/employee-image
 
       - name: Delete old container
-        run: docker rm -f sudheern87/employee-image || true
+        run: docker rm -f nice_banzai
 
       - name: Run Docker container
         run: docker run -d -p 8080:8080 --name sudheern87/employee-image
