@@ -25,7 +25,7 @@ jobs:
         run: mvn clean install -DskipTests
 
       - name: Build & push Docker image
-        uses: sudheern87/docker-build-push@v6
+        uses: docker/docker-build-push@v6
         with:
           image: sudheern87/employee-image
           tags: latest
