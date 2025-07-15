@@ -36,14 +36,18 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [aws-ec2]  # Requires self-hosted runner on EC2 with label 'aws-ec2'
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
 
     steps:
-      - name: Pull latest Docker image from dockerhub
-        run: docker pull sudheern87/employee-image
-
-      - name: Delete old container
-        run: docker rm -f nice_banzai
-
-      - name: Run Docker container
-        run: docker run -d -p 8080:8080 --name sudheern87/employee-image
+      - name: Deploy to AWS EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull sudheern87/employee-image:latest
+            docker rm -f employee-container || true
+            docker run -d -p 8080:8080 --name employee-container sudheern87/employee-image:latest
