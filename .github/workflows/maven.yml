@@ -39,7 +39,7 @@ jobs:
     runs-on: [aws-ec2]  # Requires self-hosted runner on EC2 with label 'aws-ec2'
 
     steps:
-      - name: Pull latest Docker image
+      - name: Pull latest Docker image from dockerhub
         run: docker pull sudheern87/employee-image
 
       - name: Delete old container
