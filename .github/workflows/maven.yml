@@ -48,6 +48,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull sudheern87/employee-image:latest
+            docker pull sudheern87/employee-image
             docker rm -f employee-container || true
-            docker run -d -p 8080:8080 --name employee-container sudheern87/employee-image:latest
+            docker run -d -p 8080:8080 --name employee-container sudheern87/employee-image
