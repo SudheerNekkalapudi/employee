@@ -37,7 +37,5 @@ jobs:
     steps:
       - name: Pull Image from Docker Hub
         run: docker pull sudheern87/employee-image
-      - name: Delete Existing Container
-        run: docker rm -f employee-container || true
       - name: Run Docker Container
         run: docker run -d -p 8080:8080 --name employee-container sudheern87/employee-image
