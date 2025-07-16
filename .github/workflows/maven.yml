@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Source
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -24,30 +24,20 @@ jobs:
       - name: Build with Maven
         run: mvn clean install -DskipTests
 
-      - name: Build & push Docker image
-        uses: mr-smithers-excellent/docker-build-push@v6
-        with:
-          image: sudheern87/employee-image
-          tags: latest
-          registry: docker.io
-          dockerfile: Dockerfile
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to Docker Hub
+        uses: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker Image
+        run: docker build -t sudheern87/employee-image .
+      - name: Publish image to Docker Hub
+        run: docker push sudheern87/employee-image
 
   deploy:
     needs: build
-    runs-on: aws-ec2
-    if: github.ref == 'refs/heads/master'
-
+    runs-on: [aws-ec2]
     steps:
-      - name: Deploy to AWS EC2 via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull sudheern87/employee-image
-            docker rm -f employee-container || true
-            docker run -d -p 8080:8080 --name employee-container sudheern87/employee-image
+      - name: Pull Image from Docker Hub
+        run: docker pull sudheern87/employee-image
+      - name: Delete Existing Container
+        run: docker rm -f employee-container || true
+      - name: Run Docker Container
+        run: docker run -d -p 8080:8080 --name employee-container sudheern87/employee-image
