@@ -26,20 +26,25 @@ jobs:
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Build Docker Image
-        run: docker build -t sudheern87/employee-image .
+        run: docker build -t sudheern87/employee-image:latest .
+
       - name: Publish image to Docker Hub
-        run: docker push sudheern87/employee-image
+        run: docker push sudheern87/employee-image:latest
 
   deploy:
+    needs: build  # 👈 Ensures deploy runs after build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'  # 👈 Optional safety check
+
     steps:
       - name: Deploy to AWS EC2 via SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{secrets.SERVER_HOST}}
-          username: ${{secrets.SERVER_USER}}
-          key: ${{secrets.SERVER_SSH_KEY}}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull sudheern87/employee-image:latest
